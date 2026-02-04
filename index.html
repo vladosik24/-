@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Бродилка для двох</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            overflow: hidden;
+            touch-action: none;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            color: white;
+        }
+
+        .player-info {
+            text-align: center;
+            padding: 5px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            min-width: 120px;
+        }
+
+        .player1-info {
+            border: 2px solid #ff6b6b;
+        }
+
+        .player2-info {
+            border: 2px solid #4ecdc4;
+        }
+
+        .score {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .game-area {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: #2d4a3e;
+            margin: 10px;
+            border-radius: 15px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            gap: 20px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .control-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 8px;
+            width: 140px;
+            height: 140px;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            font-size: 1.5em;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.1s;
+            touch-action: manipulation;
+        }
+
+        .control-btn:active {
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0.95);
+        }
+
+        .control-btn.empty {
+            visibility: hidden;
+        }
+
+        .player1-controls .control-btn {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.3);
+        }
+
+        .player1-controls .control-btn:active {
+            background: rgba(255, 107, 107, 0.6);
+        }
+
+        .player2-controls .control-btn {
+            border-color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.3);
+        }
+
+        .player2-controls .control-btn:active {
+            background: rgba(78, 205, 196, 0.6);
+        }
+
+        .start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .start-screen.hidden {
+            display: none;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .game-info {
+            font-size: 1.2em;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .characters {
+            display: flex;
+            gap: 40px;
+            margin: 30px 0;
+            font-size: 3em;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.3em;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .game-over {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 100;
+            color: white;
+            display: none;
+            border: 3px solid gold;
+            min-width: 300px;
+        }
+
+        .game-over.show {
+            display: block;
+        }
+
+        .winner-text {
+            font-size: 2em;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="start-screen" id="startScreen">
+        <h1>🎮 Бродилка для двох 🎮</h1>
+        <div class="characters">
+            <span>🦸</span>
+            <span>VS</span>
+            <span>🧙</span>
+        </div>
+        <div class="game-info">
+            <p>🪙 Збирайте монети</p>
+            <p>⚡ Уникайте перешкод</p>
+            <p>🏆 Хто збере більше - переможе!</p>
+        </div>
+        <button onclick="startGame()">Почати гру</button>
+    </div>
+
+    <div class="game-container">
+        <div class="header">
+            <div class="player-info player1-info">
+                <div>🦸 Гравець 1</div>
+                <div class="score" id="score1">0</div>
+            </div>
+            <div id="timer" style="font-size: 1.5em; color: white;">60</div>
+            <div class="player-info player2-info">
+                <div>🧙 Гравець 2</div>
+                <div class="score" id="score2">0</div>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <canvas id="gameCanvas"></canvas>
+        </div>
+
+        <div class="controls">
+            <div class="control-pad player1-controls">
+                <div class="control-btn empty"></div>
+                <div class="control-btn" ontouchstart="movePlayer(1, 'up')" ontouchend="stopPlayer(1)">↑</div>
+                <div class="control-btn empty"></div>
+                <div class="control-btn" ontouchstart="movePlayer(1, 'left')" ontouchend="stopPlayer(1)">←</div>
+                <div class="control-btn empty"></div>
+                <div class="control-btn" ontouchstart="movePlayer(1, 'right')" ontouchend="stopPlayer(1)">→</div>
+                <div class="control-btn empty"></div>
+                <div class="control-btn" ontouchstart="movePlayer(1, 'down')" ontouchend="stopPlayer(1)">↓</div>
+                <div class="control-btn empty"></div>
+            </div>
+
+            <div class="control-pad player2-controls">
+                <div class="control-btn empty"></div>
+                <div class="control-btn" ontouchstart="movePlayer(2, 'up')" ontouchend="stopPlayer(2)">↑</div>
+                <div class="control-btn empty"></div>
+                <div class="control-btn" ontouchstart="movePlayer(2, 'left')" ontouchend="stopPlayer(2)">←</div>
+                <div class="control-btn empty"></div>
+                <div class="control-btn" ontouchstart="movePlayer(2, 'right')" ontouchend="stopPlayer(2)">→</div>
+                <div class="control-btn empty"></div>
+                <div class="control-btn" ontouchstart="movePlayer(2, 'down')" ontouchend="stopPlayer(2)">↓</div>
+                <div class="control-btn empty"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-over" id="gameOver">
+        <h2>Гра закінчена! ⏱️</h2>
+        <div class="winner-text" id="winner"></div>
+        <p id="finalScores"></p>
+        <button onclick="restartGame()">Грати знову</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Налаштування розміру canvas
+        function resizeCanvas() {
+            const gameArea = document.querySelector('.game-area');
+            canvas.width = gameArea.clientWidth;
+            canvas.height = gameArea.clientHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Гра
+        let gameRunning = false;
+        let gameLoop;
+        let timeLeft = 60;
+        let timerInterval;
+
+        // Гравці
+        const player1 = {
+            x: 50,
+            y: 50,
+            size: 40,
+            emoji: '🦸',
+            score: 0,
+            dx: 0,
+            dy: 0,
+            speed: 3
+        };
+
+        const player2 = {
+            x: 300,
+            y: 300,
+            size: 40,
+            emoji: '🧙',
+            score: 0,
+            dx: 0,
+            dy: 0,
+            speed: 3
+        };
+
+        // Монети та перешкоди
+        let coins = [];
+        let obstacles = [];
+
+        function createCoin() {
+            return {
+                x: Math.random() * (canvas.width - 30) + 15,
+                y: Math.random() * (canvas.height - 30) + 15,
+                size: 25,
+                emoji: '🪙'
+            };
+        }
+
+        function createObstacle() {
+            return {
+                x: Math.random() * (canvas.width - 40) + 20,
+                y: Math.random() * (canvas.height - 40) + 20,
+                size: 35,
+                emoji: '🪨'
+            };
+        }
+
+        function initGame() {
+            coins = [];
+            obstacles = [];
+            
+            // Створюємо монети
+            for (let i = 0; i < 8; i++) {
+                coins.push(createCoin());
+            }
+            
+            // Створюємо перешкоди
+            for (let i = 0; i < 6; i++) {
+                obstacles.push(createObstacle());
+            }
+        }
+
+        function movePlayer(playerNum, direction) {
+            const player = playerNum === 1 ? player1 : player2;
+            
+            switch(direction) {
+                case 'up':
+                    player.dx = 0;
+                    player.dy = -player.speed;
+                    break;
+                case 'down':
+                    player.dx = 0;
+                    player.dy = player.speed;
+                    break;
+                case 'left':
+                    player.dx = -player.speed;
+                    player.dy = 0;
+                    break;
+                case 'right':
+                    player.dx = player.speed;
+                    player.dy = 0;
+                    break;
+            }
+        }
+
+        function stopPlayer(playerNum) {
+            const player = playerNum === 1 ? player1 : player2;
+            player.dx = 0;
+            player.dy = 0;
+        }
+
+        function updatePlayer(player) {
+            player.x += player.dx;
+            player.y += player.dy;
+
+            // Межі екрану
+            if (player.x < 0) player.x = 0;
+            if (player.x > canvas.width - player.size) player.x = canvas.width - player.size;
+            if (player.y < 0) player.y = 0;
+            if (player.y > canvas.height - player.size) player.y = canvas.height - player.size;
+
+            // Перевірка зіткнень з перешкодами
+            for (let obstacle of obstacles) {
+                if (checkCollision(player, obstacle)) {
+                    // Відштовхуємо назад
+                    player.x -= player.dx * 2;
+                    player.y -= player.dy * 2;
+                    player.dx = 0;
+                    player.dy = 0;
+                }
+            }
+
+            // Перевірка збору монет
+            for (let i = coins.length - 1; i >= 0; i--) {
+                if (checkCollision(player, coins[i])) {
+                    player.score += 10;
+                    coins.splice(i, 1);
+                    coins.push(createCoin());
+                }
+            }
+        }
+
+        function checkCollision(obj1, obj2) {
+            return obj1.x < obj2.x + obj2.size &&
+                   obj1.x + obj1.size > obj2.x &&
+                   obj1.y < obj2.y + obj2.size &&
+                   obj1.y + obj1.size > obj2.y;
+        }
+
+        function drawEmoji(emoji, x, y, size) {
+            ctx.font = `${size}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(emoji, x + size/2, y + size/2);
+        }
+
+        function draw() {
+            // Очищення canvas
+            ctx.fillStyle = '#2d4a3e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Малюємо сітку
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < canvas.width; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, canvas.height);
+                ctx.stroke();
+            }
+            for (let i = 0; i < canvas.height; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(canvas.width, i);
+                ctx.stroke();
+            }
+
+            // Малюємо перешкоди
+            obstacles.forEach(obstacle => {
+                drawEmoji(obstacle.emoji, obstacle.x, obstacle.y, obstacle.size);
+            });
+
+            // Малюємо монети
+            coins.forEach(coin => {
+                drawEmoji(coin.emoji, coin.x, coin.y, coin.size);
+            });
+
+            // Малюємо гравців
+            drawEmoji(player1.emoji, player1.x, player1.y, player1.size);
+            drawEmoji(player2.emoji, player2.x, player2.y, player2.size);
+
+            // Оновлюємо рахунок
+            document.getElementById('score1').textContent = player1.score;
+            document.getElementById('score2').textContent = player2.score;
+        }
+
+        function update() {
+            updatePlayer(player1);
+            updatePlayer(player2);
+            draw();
+        }
+
+        function startGame() {
+            document.getElementById('startScreen').classList.add('hidden');
+            gameRunning = true;
+            timeLeft = 60;
+            player1.score = 0;
+            player2.score = 0;
+            player1.x = 50;
+            player1.y = 50;
+            player2.x = Math.min(300, canvas.width - 100);
+            player2.y = Math.min(300, canvas.height - 100);
+            player1.dx = 0;
+            player1.dy = 0;
+            player2.dx = 0;
+            player2.dy = 0;
+
+            resizeCanvas();
+            initGame();
+
+            gameLoop = setInterval(update, 1000 / 60);
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function endGame() {
+            gameRunning = false;
+            clearInterval(gameLoop);
+            clearInterval(timerInterval);
+
+            const gameOver = document.getElementById('gameOver');
+            const winner = document.getElementById('winner');
+            const finalScores = document.getElementById('finalScores');
+
+            if (player1.score > player2.score) {
+                winner.textContent = '🦸 Гравець 1 переміг! 🏆';
+                winner.style.color = '#ff6b6b';
+            } else if (player2.score > player1.score) {
+                winner.textContent = '🧙 Гравець 2 переміг! 🏆';
+                winner.style.color = '#4ecdc4';
+            } else {
+                winner.textContent = '🤝 Нічия!';
+                winner.style.color = 'gold';
+            }
+
+            finalScores.innerHTML = `
+                🦸 Гравець 1: ${player1.score} очок<br>
+                🧙 Гравець 2: ${player2.score} очок
+            `;
+
+            gameOver.classList.add('show');
+        }
+
+        function restartGame() {
+            document.getElementById('gameOver').classList.remove('show');
+            startGame();
+        }
+
+        // Початкове малювання
+        draw();
+    </script>
+</body>
+</html>
