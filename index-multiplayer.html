@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Бродилка Онлайн</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            overflow: hidden;
+            touch-action: none;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            color: white;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .player-info {
+            text-align: center;
+            padding: 5px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            min-width: 100px;
+        }
+
+        .player1-info {
+            border: 2px solid #ff6b6b;
+        }
+
+        .player2-info {
+            border: 2px solid #4ecdc4;
+        }
+
+        .score {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .status {
+            font-size: 0.8em;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+
+        .game-area {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: #2d4a3e;
+            margin: 10px;
+            border-radius: 15px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            padding: 15px;
+            gap: 20px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .control-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 8px;
+            width: 130px;
+            height: 130px;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            font-size: 1.5em;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.1s;
+            touch-action: manipulation;
+        }
+
+        .control-btn:active {
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0.95);
+        }
+
+        .control-btn.empty {
+            visibility: hidden;
+        }
+
+        .my-controls .control-btn {
+            border-color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.3);
+        }
+
+        .my-controls .control-btn:active {
+            background: rgba(78, 205, 196, 0.6);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .modal.hidden {
+            display: none;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .game-info {
+            font-size: 1.1em;
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+
+        .characters {
+            display: flex;
+            gap: 30px;
+            margin: 20px 0;
+            font-size: 2.5em;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.2em;
+            border-radius: 15px;
+            cursor: pointer;
+            margin: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button.secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        input {
+            padding: 12px 20px;
+            font-size: 1.1em;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-align: center;
+            margin: 10px 0;
+            width: 250px;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .room-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .room-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .room-item button {
+            padding: 8px 20px;
+            font-size: 0.9em;
+            margin: 0;
+        }
+
+        .loading {
+            font-size: 1.2em;
+            margin: 20px 0;
+        }
+
+        .winner-text {
+            font-size: 2em;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .connection-status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 8px 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            font-size: 0.9em;
+            color: white;
+            z-index: 50;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .status-dot.online {
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.offline {
+            background: #f44336;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .player-name {
+            font-size: 0.9em;
+            margin-top: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="connection-status" id="connectionStatus">
+        <span class="status-dot online" id="statusDot"></span>
+        <span id="statusText">Онлайн</span>
+    </div>
+
+    <!-- Початковий екран -->
+    <div class="modal" id="startScreen">
+        <h1>🌐 Бродилка Онлайн 🎮</h1>
+        <div class="characters">
+            <span>🦸</span>
+            <span>🧙</span>
+            <span>🧝</span>
+            <span>🦹</span>
+        </div>
+        <div class="game-info">
+            <p>Грайте онлайн з друзями!</p>
+            <p>🪙 Збирайте монети • ⚡ Уникайте перешкод</p>
+        </div>
+        <input type="text" id="playerName" placeholder="Ваше ім'я" maxlength="15">
+        <button onclick="showRoomSelection()">Далі</button>
+    </div>
+
+    <!-- Вибір кімнати -->
+    <div class="modal hidden" id="roomSelection">
+        <h2>Виберіть кімнату</h2>
+        <div class="game-info">
+            <p>Створіть нову кімнату або приєднайтесь до існуючої</p>
+        </div>
+        <input type="text" id="roomCode" placeholder="Код кімнати (4 символи)" maxlength="4">
+        <button onclick="createRoom()">Створити кімнату</button>
+        <button class="secondary" onclick="joinRoom()">Приєднатися</button>
+        <div class="loading hidden" id="loadingText">Підключення...</div>
+        <button class="secondary" onclick="backToStart()">Назад</button>
+    </div>
+
+    <!-- Очікування гравця -->
+    <div class="modal hidden" id="waitingScreen">
+        <h2>Очікування гравця...</h2>
+        <div class="game-info">
+            <p>Код кімнати: <strong id="currentRoomCode"></strong></p>
+            <p>Поділіться цим кодом з другом!</p>
+        </div>
+        <div class="loading">🔄 Очікування підключення...</div>
+        <button class="secondary" onclick="cancelWaiting()">Скасувати</button>
+    </div>
+
+    <!-- Гра -->
+    <div class="game-container hidden" id="gameContainer">
+        <div class="header">
+            <div class="player-info player1-info">
+                <div id="player1Name">Гравець 1</div>
+                <div class="score" id="score1">0</div>
+                <div class="status" id="status1">🟢 Онлайн</div>
+            </div>
+            <div id="timer" style="font-size: 1.5em; color: white;">60</div>
+            <div class="player-info player2-info">
+                <div id="player2Name">Гравець 2</div>
+                <div class="score" id="score2">0</div>
+                <div class="status" id="status2">🟢 Онлайн</div>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <canvas id="gameCanvas"></canvas>
+        </div>
+
+        <div class="controls">
+            <div class="control-pad my-controls">
+                <div class="control-btn empty"></div>
+                <div class="control-btn" ontouchstart="moveMyPlayer('up')" ontouchend="stopMyPlayer()">↑</div>
+                <div class="control-btn empty"></div>
+                <div class="control-btn" ontouchstart="moveMyPlayer('left')" ontouchend="stopMyPlayer()">←</div>
+                <div class="control-btn empty"></div>
+                <div class="control-btn" ontouchstart="moveMyPlayer('right')" ontouchend="stopMyPlayer()">→</div>
+                <div class="control-btn empty"></div>
+                <div class="control-btn" ontouchstart="moveMyPlayer('down')" ontouchend="stopMyPlayer()">↓</div>
+                <div class="control-btn empty"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Кінець гри -->
+    <div class="modal hidden" id="gameOver">
+        <h2>Гра закінчена! ⏱️</h2>
+        <div class="winner-text" id="winner"></div>
+        <p id="finalScores"></p>
+        <button onclick="backToRoomSelection()">Нова гра</button>
+    </div>
+
+    <script>
+        // Storage API для синхронізації
+        const storage = window.storage;
+        
+        // Налаштування
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const EMOJI_CHARACTERS = ['🦸', '🧙', '🧝', '🦹', '🧚', '🦇', '🐉', '🦁'];
+        
+        // Стан гри
+        let myPlayerId = null;
+        let myPlayerName = '';
+        let currentRoom = null;
+        let gameRunning = false;
+        let gameLoop = null;
+        let syncLoop = null;
+        let timeLeft = 60;
+        let timerInterval = null;
+
+        // Гравці
+        let players = {};
+        let coins = [];
+        let obstacles = [];
+
+        function resizeCanvas() {
+            const gameArea = document.querySelector('.game-area');
+            canvas.width = gameArea.clientWidth;
+            canvas.height = gameArea.clientHeight;
+        }
+
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function generateRoomCode() {
+            return Math.random().toString(36).substr(2, 4).toUpperCase();
+        }
+
+        async function showRoomSelection() {
+            const name = document.getElementById('playerName').value.trim();
+            if (!name) {
+                alert('Будь ласка, введіть ваше ім\'я!');
+                return;
+            }
+            myPlayerName = name;
+            myPlayerId = generateId();
+            
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('roomSelection').classList.remove('hidden');
+        }
+
+        async function createRoom() {
+            const roomCode = document.getElementById('roomCode').value.trim().toUpperCase();
+            if (!roomCode || roomCode.length !== 4) {
+                alert('Введіть код кімнати з 4 символів!');
+                return;
+            }
+
+            try {
+                // Перевіряємо чи існує кімната
+                let existingRoom = null;
+                try {
+                    existingRoom = await storage.get(`room:${roomCode}`, true);
+                } catch (e) {
+                    // Кімната не існує, це добре
+                }
+
+                if (existingRoom) {
+                    alert('Кімната з таким кодом вже існує! Спробуйте інший код.');
+                    return;
+                }
+
+                currentRoom = roomCode;
+                
+                // Створюємо кімнату
+                const roomData = {
+                    code: roomCode,
+                    host: myPlayerId,
+                    hostName: myPlayerName,
+                    guest: null,
+                    guestName: null,
+                    status: 'waiting',
+                    createdAt: Date.now()
+                };
+
+                await storage.set(`room:${roomCode}`, JSON.stringify(roomData), true);
+                
+                document.getElementById('roomSelection').classList.add('hidden');
+                document.getElementById('waitingScreen').classList.remove('hidden');
+                document.getElementById('currentRoomCode').textContent = roomCode;
+                
+                // Чекаємо на підключення другого гравця
+                waitForPlayer();
+            } catch (error) {
+                console.error('Error creating room:', error);
+                alert('Помилка створення кімнати. Спробуйте ще раз.');
+            }
+        }
+
+        async function joinRoom() {
+            const roomCode = document.getElementById('roomCode').value.trim().toUpperCase();
+            if (!roomCode || roomCode.length !== 4) {
+                alert('Введіть код кімнати з 4 символів!');
+                return;
+            }
+
+            try {
+                const roomDataStr = await storage.get(`room:${roomCode}`, true);
+                if (!roomDataStr) {
+                    alert('Кімната не знайдена! Перевірте код.');
+                    return;
+                }
+
+                const roomData = JSON.parse(roomDataStr.value);
+                
+                if (roomData.guest) {
+                    alert('Кімната вже заповнена!');
+                    return;
+                }
+
+                currentRoom = roomCode;
+                
+                // Приєднуємось до кімнати
+                roomData.guest = myPlayerId;
+                roomData.guestName = myPlayerName;
+                roomData.status = 'ready';
+                
+                await storage.set(`room:${roomCode}`, JSON.stringify(roomData), true);
+                
+                // Запускаємо гру
+                startOnlineGame(false);
+            } catch (error) {
+                console.error('Error joining room:', error);
+                alert('Кімната не знайдена! Перевірте код.');
+            }
+        }
+
+        async function waitForPlayer() {
+            const checkInterval = setInterval(async () => {
+                try {
+                    const roomDataStr = await storage.get(`room:${currentRoom}`, true);
+                    if (roomDataStr) {
+                        const roomData = JSON.parse(roomDataStr.value);
+                        if (roomData.guest) {
+                            clearInterval(checkInterval);
+                            startOnlineGame(true);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error checking room:', error);
+                }
+            }, 1000);
+        }
+
+        function cancelWaiting() {
+            if (currentRoom) {
+                storage.delete(`room:${currentRoom}`, true).catch(e => {});
+            }
+            backToRoomSelection();
+        }
+
+        function backToStart() {
+            document.getElementById('roomSelection').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+        }
+
+        function backToRoomSelection() {
+            document.getElementById('gameOver').classList.add('hidden');
+            document.getElementById('gameContainer').classList.add('hidden');
+            document.getElementById('roomSelection').classList.remove('hidden');
+            
+            if (gameLoop) clearInterval(gameLoop);
+            if (syncLoop) clearInterval(syncLoop);
+            if (timerInterval) clearInterval(timerInterval);
+            gameRunning = false;
+        }
+
+        async function startOnlineGame(isHost) {
+            try {
+                // Отримуємо дані кімнати
+                const roomDataStr = await storage.get(`room:${currentRoom}`, true);
+                const roomData = JSON.parse(roomDataStr.value);
+                
+                document.getElementById('waitingScreen').classList.add('hidden');
+                document.getElementById('roomSelection').classList.add('hidden');
+                document.getElementById('gameContainer').classList.remove('hidden');
+                
+                resizeCanvas();
+                
+                // Налаштовуємо гравців
+                const player1Id = roomData.host;
+                const player2Id = roomData.guest;
+                
+                players[player1Id] = {
+                    id: player1Id,
+                    name: roomData.hostName,
+                    x: 50,
+                    y: 50,
+                    size: 40,
+                    emoji: EMOJI_CHARACTERS[0],
+                    score: 0,
+                    dx: 0,
+                    dy: 0,
+                    speed: 3
+                };
+                
+                players[player2Id] = {
+                    id: player2Id,
+                    name: roomData.guestName,
+                    x: Math.min(300, canvas.width - 100),
+                    y: Math.min(300, canvas.height - 100),
+                    size: 40,
+                    emoji: EMOJI_CHARACTERS[1],
+                    score: 0,
+                    dx: 0,
+                    dy: 0,
+                    speed: 3
+                };
+                
+                // Відображаємо імена
+                document.getElementById('player1Name').textContent = roomData.hostName;
+                document.getElementById('player2Name').textContent = roomData.guestName;
+                
+                // Ініціалізуємо гру
+                initGameObjects();
+                
+                // Синхронізуємо стан гри
+                await saveGameState();
+                
+                gameRunning = true;
+                timeLeft = 60;
+                
+                // Основний цикл гри
+                gameLoop = setInterval(() => {
+                    updateGame();
+                    draw();
+                }, 1000 / 60);
+                
+                // Цикл синхронізації
+                syncLoop = setInterval(syncGame, 100);
+                
+                // Таймер
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    document.getElementById('timer').textContent = timeLeft;
+                    
+                    if (timeLeft <= 0) {
+                        endGame();
+                    }
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Error starting game:', error);
+                alert('Помилка запуску гри');
+            }
+        }
+
+        function initGameObjects() {
+            coins = [];
+            obstacles = [];
+            
+            for (let i = 0; i < 8; i++) {
+                coins.push(createCoin());
+            }
+            
+            for (let i = 0; i < 6; i++) {
+                obstacles.push(createObstacle());
+            }
+        }
+
+        function createCoin() {
+            return {
+                x: Math.random() * (canvas.width - 30) + 15,
+                y: Math.random() * (canvas.height - 30) + 15,
+                size: 25,
+                emoji: '🪙'
+            };
+        }
+
+        function createObstacle() {
+            return {
+                x: Math.random() * (canvas.width - 40) + 20,
+                y: Math.random() * (canvas.height - 40) + 20,
+                size: 35,
+                emoji: '🪨'
+            };
+        }
+
+        function moveMyPlayer(direction) {
+            const player = players[myPlayerId];
+            if (!player) return;
+            
+            switch(direction) {
+                case 'up':
+                    player.dx = 0;
+                    player.dy = -player.speed;
+                    break;
+                case 'down':
+                    player.dx = 0;
+                    player.dy = player.speed;
+                    break;
+                case 'left':
+                    player.dx = -player.speed;
+                    player.dy = 0;
+                    break;
+                case 'right':
+                    player.dx = player.speed;
+                    player.dy = 0;
+                    break;
+            }
+        }
+
+        function stopMyPlayer() {
+            const player = players[myPlayerId];
+            if (!player) return;
+            player.dx = 0;
+            player.dy = 0;
+        }
+
+        function updateGame() {
+            Object.values(players).forEach(player => {
+                updatePlayer(player);
+            });
+        }
+
+        function updatePlayer(player) {
+            player.x += player.dx;
+            player.y += player.dy;
+
+            if (player.x < 0) player.x = 0;
+            if (player.x > canvas.width - player.size) player.x = canvas.width - player.size;
+            if (player.y < 0) player.y = 0;
+            if (player.y > canvas.height - player.size) player.y = canvas.height - player.size;
+
+            for (let obstacle of obstacles) {
+                if (checkCollision(player, obstacle)) {
+                    player.x -= player.dx * 2;
+                    player.y -= player.dy * 2;
+                    player.dx = 0;
+                    player.dy = 0;
+                }
+            }
+
+            for (let i = coins.length - 1; i >= 0; i--) {
+                if (checkCollision(player, coins[i])) {
+                    player.score += 10;
+                    coins.splice(i, 1);
+                    coins.push(createCoin());
+                }
+            }
+        }
+
+        function checkCollision(obj1, obj2) {
+            return obj1.x < obj2.x + obj2.size &&
+                   obj1.x + obj1.size > obj2.x &&
+                   obj1.y < obj2.y + obj2.size &&
+                   obj1.y + obj1.size > obj2.y;
+        }
+
+        function drawEmoji(emoji, x, y, size) {
+            ctx.font = `${size}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(emoji, x + size/2, y + size/2);
+        }
+
+        function draw() {
+            ctx.fillStyle = '#2d4a3e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < canvas.width; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, canvas.height);
+                ctx.stroke();
+            }
+            for (let i = 0; i < canvas.height; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(canvas.width, i);
+                ctx.stroke();
+            }
+
+            obstacles.forEach(obstacle => {
+                drawEmoji(obstacle.emoji, obstacle.x, obstacle.y, obstacle.size);
+            });
+
+            coins.forEach(coin => {
+                drawEmoji(coin.emoji, coin.x, coin.y, coin.size);
+            });
+
+            Object.values(players).forEach(player => {
+                drawEmoji(player.emoji, player.x, player.y, player.size);
+            });
+
+            // Оновлюємо рахунок
+            const playerIds = Object.keys(players);
+            if (playerIds.length >= 2) {
+                document.getElementById('score1').textContent = players[playerIds[0]].score;
+                document.getElementById('score2').textContent = players[playerIds[1]].score;
+            }
+        }
+
+        async function saveGameState() {
+            if (!currentRoom || !myPlayerId) return;
+            
+            try {
+                const myPlayer = players[myPlayerId];
+                if (!myPlayer) return;
+                
+                const playerState = {
+                    x: myPlayer.x,
+                    y: myPlayer.y,
+                    dx: myPlayer.dx,
+                    dy: myPlayer.dy,
+                    score: myPlayer.score,
+                    lastUpdate: Date.now()
+                };
+                
+                await storage.set(`game:${currentRoom}:${myPlayerId}`, JSON.stringify(playerState), true);
+            } catch (error) {
+                console.error('Error saving state:', error);
+            }
+        }
+
+        async function syncGame() {
+            if (!gameRunning || !currentRoom) return;
+            
+            try {
+                // Зберігаємо свій стан
+                await saveGameState();
+                
+                // Завантажуємо стан іншого гравця
+                const otherPlayerId = Object.keys(players).find(id => id !== myPlayerId);
+                if (!otherPlayerId) return;
+                
+                const otherStateStr = await storage.get(`game:${currentRoom}:${otherPlayerId}`, true);
+                if (otherStateStr) {
+                    const otherState = JSON.parse(otherStateStr.value);
+                    const otherPlayer = players[otherPlayerId];
+                    
+                    if (otherPlayer && otherState) {
+                        otherPlayer.x = otherState.x;
+                        otherPlayer.y = otherState.y;
+                        otherPlayer.dx = otherState.dx;
+                        otherPlayer.dy = otherState.dy;
+                        otherPlayer.score = otherState.score;
+                    }
+                }
+            } catch (error) {
+                console.error('Error syncing:', error);
+            }
+        }
+
+        async function endGame() {
+            gameRunning = false;
+            clearInterval(gameLoop);
+            clearInterval(syncLoop);
+            clearInterval(timerInterval);
+
+            const gameOver = document.getElementById('gameOver');
+            const winner = document.getElementById('winner');
+            const finalScores = document.getElementById('finalScores');
+
+            const playerIds = Object.keys(players);
+            const player1 = players[playerIds[0]];
+            const player2 = players[playerIds[1]];
+
+            if (player1.score > player2.score) {
+                winner.textContent = `${player1.emoji} ${player1.name} переміг! 🏆`;
+                winner.style.color = '#ff6b6b';
+            } else if (player2.score > player1.score) {
+                winner.textContent = `${player2.emoji} ${player2.name} переміг! 🏆`;
+                winner.style.color = '#4ecdc4';
+            } else {
+                winner.textContent = '🤝 Нічия!';
+                winner.style.color = 'gold';
+            }
+
+            finalScores.innerHTML = `
+                ${player1.emoji} ${player1.name}: ${player1.score} очок<br>
+                ${player2.emoji} ${player2.name}: ${player2.score} очок
+            `;
+
+            document.getElementById('gameContainer').classList.add('hidden');
+            gameOver.classList.remove('hidden');
+            
+            // Очищаємо кімнату
+            if (currentRoom) {
+                try {
+                    await storage.delete(`room:${currentRoom}`, true);
+                    await storage.delete(`game:${currentRoom}:${myPlayerId}`, true);
+                } catch (e) {}
+            }
+        }
+
+        // Ініціалізація
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+    </script>
+</body>
+  </html>
