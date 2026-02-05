@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Бродилка - Гра для двох</title>
+    <title>Бродилка Ultimate Edition</title>
     <style>
         * {
             margin: 0;
@@ -31,21 +31,22 @@
 
         .header {
             background: rgba(0, 0, 0, 0.5);
-            padding: 10px;
+            padding: 8px;
             display: flex;
-            justify-content: space-around;
+            justify-content: space-between;
             align-items: center;
             color: white;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 5px;
         }
 
         .player-info {
             text-align: center;
-            padding: 5px 15px;
+            padding: 4px 10px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            min-width: 100px;
+            border-radius: 8px;
+            min-width: 90px;
+            font-size: 0.85em;
         }
 
         .player1-info {
@@ -57,24 +58,17 @@
         }
 
         .score {
-            font-size: 1.3em;
+            font-size: 1.2em;
             font-weight: bold;
-            margin-top: 5px;
-        }
-
-        .status {
-            font-size: 0.8em;
-            opacity: 0.8;
-            margin-top: 2px;
+            margin-top: 3px;
         }
 
         .game-area {
             flex: 1;
             position: relative;
             overflow: hidden;
-            background: #2d4a3e;
-            margin: 10px;
-            border-radius: 15px;
+            margin: 8px;
+            border-radius: 12px;
             box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
         }
 
@@ -87,8 +81,8 @@
         .controls {
             display: flex;
             justify-content: space-between;
-            padding: 15px;
-            gap: 15px;
+            padding: 12px;
+            gap: 12px;
             background: rgba(0, 0, 0, 0.3);
         }
 
@@ -100,16 +94,16 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(3, 1fr);
-            gap: 8px;
-            width: 130px;
-            height: 130px;
+            gap: 6px;
+            width: 120px;
+            height: 120px;
         }
 
         .control-btn {
             background: rgba(255, 255, 255, 0.3);
             border: 2px solid rgba(255, 255, 255, 0.5);
-            border-radius: 10px;
-            font-size: 1.5em;
+            border-radius: 8px;
+            font-size: 1.3em;
             color: white;
             display: flex;
             align-items: center;
@@ -134,17 +128,9 @@
             background: rgba(255, 107, 107, 0.3);
         }
 
-        .player1-controls .control-btn:active {
-            background: rgba(255, 107, 107, 0.6);
-        }
-
         .player2-controls .control-btn {
             border-color: #4ecdc4;
             background: rgba(78, 205, 196, 0.3);
-        }
-
-        .player2-controls .control-btn:active {
-            background: rgba(78, 205, 196, 0.6);
         }
 
         .modal {
@@ -153,15 +139,16 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.95);
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             z-index: 100;
             color: white;
             text-align: center;
-            padding: 20px;
+            padding: 15px;
+            overflow-y: auto;
         }
 
         .modal.hidden {
@@ -169,83 +156,75 @@
         }
 
         h1 {
-            font-size: 2.2em;
-            margin-bottom: 20px;
+            font-size: 2em;
+            margin: 15px 0;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         h2 {
-            font-size: 1.8em;
-            margin-bottom: 15px;
+            font-size: 1.5em;
+            margin: 12px 0;
         }
 
-        .game-info {
-            font-size: 1.1em;
+        h3 {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        .section {
+            width: 100%;
+            max-width: 600px;
+            margin: 10px 0;
+        }
+
+        .mode-selection, .difficulty-selection, .character-grid, .map-grid {
+            display: flex;
+            gap: 15px;
             margin: 15px 0;
-            line-height: 1.6;
-        }
-
-        .characters {
-            display: flex;
-            gap: 30px;
-            margin: 20px 0;
-            font-size: 2.5em;
-        }
-
-        .mode-selection {
-            display: flex;
-            gap: 20px;
-            margin: 30px 0;
             flex-wrap: wrap;
             justify-content: center;
         }
 
-        .mode-card {
+        .card {
             background: rgba(255, 255, 255, 0.1);
             border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 20px;
-            padding: 30px;
-            width: 280px;
+            border-radius: 15px;
+            padding: 20px;
             cursor: pointer;
             transition: all 0.3s;
+            min-width: 140px;
         }
 
-        .mode-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(255, 255, 255, 0.6);
-            background: rgba(255, 255, 255, 0.15);
+        .card:hover, .card.selected {
+            transform: translateY(-3px);
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.2);
         }
 
-        .mode-card:active {
-            transform: scale(0.98);
+        .card .icon {
+            font-size: 2.5em;
+            margin-bottom: 8px;
         }
 
-        .mode-card h3 {
-            font-size: 1.5em;
-            margin: 15px 0;
+        .character-card {
+            width: 80px;
+            padding: 15px 10px;
         }
 
-        .mode-card .icon {
-            font-size: 3em;
-            margin-bottom: 10px;
-        }
-
-        .mode-card .description {
-            font-size: 0.9em;
-            opacity: 0.8;
-            margin-top: 10px;
+        .character-card .icon {
+            font-size: 2em;
         }
 
         button {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 15px 35px;
-            font-size: 1.2em;
-            border-radius: 15px;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border-radius: 12px;
             cursor: pointer;
-            margin: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            margin: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             transition: transform 0.2s;
         }
 
@@ -258,109 +237,302 @@
         }
 
         input {
-            padding: 12px 20px;
-            font-size: 1.1em;
+            padding: 10px 18px;
+            font-size: 1em;
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 10px;
             background: rgba(255, 255, 255, 0.1);
             color: white;
             text-align: center;
-            margin: 10px 0;
-            width: 250px;
+            margin: 8px 0;
+            max-width: 250px;
         }
 
         input::placeholder {
             color: rgba(255, 255, 255, 0.6);
         }
 
-        .loading {
+        .stats-panel {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: left;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-box {
+            position: fixed;
+            bottom: 140px;
+            left: 10px;
+            right: 10px;
+            max-height: 120px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            padding: 8px;
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        .chat-box.visible {
+            display: flex;
+        }
+
+        .chat-message {
+            padding: 5px 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            font-size: 0.85em;
+        }
+
+        .emoji-bar {
+            position: fixed;
+            bottom: 140px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+            z-index: 10;
+        }
+
+        .emoji-btn {
+            width: 35px;
+            height: 35px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3em;
+            cursor: pointer;
+        }
+
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            font-size: 1.5em;
+            animation: float-up 1s ease-out forwards;
+        }
+
+        @keyframes float-up {
+            to {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+        }
+
+        .powerup-indicator {
+            position: fixed;
+            top: 60px;
+            right: 10px;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
             font-size: 1.2em;
-            margin: 20px 0;
+            display: none;
+        }
+
+        .powerup-indicator.active {
+            display: block;
+            animation: pulse 0.5s infinite;
+        }
+
+        .round-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            color: white;
+            text-shadow: 0 0 20px rgba(0,0,0,0.8);
+            display: none;
+            z-index: 200;
+        }
+
+        .round-indicator.show {
+            display: block;
+            animation: zoomIn 0.5s ease-out;
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: translate(-50%, -50%) scale(0);
+            }
+            to {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .loading {
+            font-size: 1.1em;
+            margin: 15px 0;
         }
 
         .winner-text {
-            font-size: 2em;
-            margin: 20px 0;
+            font-size: 1.8em;
+            margin: 15px 0;
             font-weight: bold;
         }
 
-        .connection-status {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            padding: 8px 15px;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 20px;
-            font-size: 0.9em;
-            color: white;
-            z-index: 50;
+        .toggle-switch {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px;
         }
 
-        .status-dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 5px;
+        .switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 13px;
+            cursor: pointer;
+            transition: background 0.3s;
         }
 
-        .status-dot.online {
+        .switch.on {
             background: #4caf50;
-            animation: pulse 2s infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .switch-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: left 0.3s;
+        }
+
+        .switch.on .switch-slider {
+            left: 27px;
         }
     </style>
 </head>
 <body>
-    <div class="connection-status hidden" id="connectionStatus">
-        <span class="status-dot online" id="statusDot"></span>
-        <span id="statusText">Онлайн</span>
-    </div>
-
     <!-- Вибір режиму -->
     <div class="modal" id="modeSelection">
-        <h1>🎮 Бродилка для двох 🎮</h1>
-        <div class="characters">
-            <span>🦸</span>
-            <span>🧙</span>
-            <span>🧝</span>
-        </div>
+        <h1>🎮 Бродилка Ultimate 🎮</h1>
+        <div style="font-size: 2.5em; margin: 15px 0;">🦸 🧙 🧝 🦹</div>
         <h2>Виберіть режим гри:</h2>
         <div class="mode-selection">
-            <div class="mode-card" onclick="selectMode('local')">
+            <div class="card" onclick="selectMode('local')">
                 <div class="icon">📱</div>
-                <h3>Локальна гра</h3>
-                <div class="description">
-                    Обидва гравці на<br>одному телефоні<br>
-                    <br>✓ Без інтернету<br>✓ Швидкий старт
-                </div>
+                <h3>Локальна</h3>
+                <div>На одному<br>телефоні</div>
             </div>
-            <div class="mode-card" onclick="selectMode('online')">
+            <div class="card" onclick="selectMode('online')">
                 <div class="icon">🌐</div>
-                <h3>Онлайн гра</h3>
-                <div class="description">
-                    Кожен гравець на<br>своєму телефоні<br>
-                    <br>✓ Через інтернет<br>✓ З друзями
+                <h3>Онлайн</h3>
+                <div>Через<br>інтернет</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>⚙️ Налаштування:</h3>
+            <div class="toggle-switch">
+                <span>🎵 Звук</span>
+                <div class="switch on" id="soundToggle" onclick="toggleSound()">
+                    <div class="switch-slider"></div>
                 </div>
             </div>
         </div>
+
+        <button class="secondary" onclick="showStats()">📊 Статистика</button>
+    </div>
+
+    <!-- Налаштування гри -->
+    <div class="modal hidden" id="gameSettings">
+        <h2>⚙️ Налаштування гри</h2>
+        
+        <div class="section">
+            <h3>🎯 Складність:</h3>
+            <div class="difficulty-selection">
+                <div class="card" onclick="selectDifficulty('easy')">
+                    <div class="icon">😊</div>
+                    <div>Легко</div>
+                </div>
+                <div class="card selected" onclick="selectDifficulty('medium')">
+                    <div class="icon">😐</div>
+                    <div>Середнє</div>
+                </div>
+                <div class="card" onclick="selectDifficulty('hard')">
+                    <div class="icon">😈</div>
+                    <div>Важко</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🎲 Режим гри:</h3>
+            <div class="difficulty-selection">
+                <div class="card selected" onclick="selectGameMode('time')">
+                    <div class="icon">⏱️</div>
+                    <div>60 секунд</div>
+                </div>
+                <div class="card" onclick="selectGameMode('score')">
+                    <div class="icon">🎯</div>
+                    <div>До 100 очок</div>
+                </div>
+                <div class="card" onclick="selectGameMode('tournament')">
+                    <div class="icon">🏆</div>
+                    <div>Турнір (3 раунди)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🗺️ Карта:</h3>
+            <div class="map-grid">
+                <div class="card character-card selected" onclick="selectMap('forest')">
+                    <div class="icon">🌲</div>
+                    <div>Ліс</div>
+                </div>
+                <div class="card character-card" onclick="selectMap('desert')">
+                    <div class="icon">🏜️</div>
+                    <div>Пустеля</div>
+                </div>
+                <div class="card character-card" onclick="selectMap('ice')">
+                    <div class="icon">❄️</div>
+                    <div>Льодовик</div>
+                </div>
+                <div class="card character-card" onclick="selectMap('volcano')">
+                    <div class="icon">🌋</div>
+                    <div>Вулкан</div>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="showCharacterSelection()">Далі →</button>
+        <button class="secondary" onclick="backToModeSelection()">← Назад</button>
+    </div>
+
+    <!-- Вибір персонажів -->
+    <div class="modal hidden" id="characterSelection">
+        <h2>Виберіть персонажів</h2>
+        
+        <div class="section">
+            <h3 id="selectingPlayerText">🦸 Гравець 1</h3>
+            <div class="character-grid" id="characterGrid"></div>
+        </div>
+
+        <button onclick="confirmCharacters()">Почати гру!</button>
+        <button class="secondary" onclick="backToSettings()">← Назад</button>
     </div>
 
     <!-- Онлайн: введення імені -->
     <div class="modal hidden" id="nameScreen">
         <h1>🌐 Онлайн режим</h1>
-        <div class="characters">
-            <span>🦸</span>
-            <span>VS</span>
-            <span>🧙</span>
-        </div>
-        <div class="game-info">
-            <p>Введіть ваше ім'я:</p>
-        </div>
         <input type="text" id="playerName" placeholder="Ваше ім'я" maxlength="15">
         <button onclick="showRoomSelection()">Далі</button>
         <button class="secondary" onclick="backToModeSelection()">Назад</button>
@@ -369,40 +541,43 @@
     <!-- Онлайн: вибір кімнати -->
     <div class="modal hidden" id="roomSelection">
         <h2>Виберіть кімнату</h2>
-        <div class="game-info">
-            <p>Створіть нову кімнату або приєднайтесь</p>
-        </div>
-        <input type="text" id="roomCode" placeholder="Код кімнати (4 символи)" maxlength="4">
-        <button onclick="createRoom()">Створити кімнату</button>
+        <input type="text" id="roomCode" placeholder="Код (4 символи)" maxlength="4">
+        <button onclick="createRoom()">Створити</button>
         <button class="secondary" onclick="joinRoom()">Приєднатися</button>
         <div class="loading hidden" id="loadingText">Підключення...</div>
-        <button class="secondary" onclick="backToNameScreen()">Назад</button>
+        <button class="secondary" onclick="backToSettings()">Назад</button>
     </div>
 
-    <!-- Онлайн: очікування -->
+    <!-- Очікування -->
     <div class="modal hidden" id="waitingScreen">
-        <h2>Очікування гравця...</h2>
-        <div class="game-info">
-            <p>Код кімнати: <strong id="currentRoomCode"></strong></p>
-            <p>Поділіться цим кодом з другом!</p>
-        </div>
-        <div class="loading">🔄 Очікування підключення...</div>
+        <h2>Очікування...</h2>
+        <div>Код: <strong id="currentRoomCode"></strong></div>
+        <div class="loading">🔄 Очікування гравця...</div>
         <button class="secondary" onclick="cancelWaiting()">Скасувати</button>
+    </div>
+
+    <!-- Статистика -->
+    <div class="modal hidden" id="statsScreen">
+        <h2>📊 Статистика</h2>
+        <div class="stats-panel" id="statsContent"></div>
+        <button onclick="resetStats()">🗑️ Скинути</button>
+        <button class="secondary" onclick="closeStats()">Закрити</button>
     </div>
 
     <!-- Гра -->
     <div class="game-container hidden" id="gameContainer">
         <div class="header">
             <div class="player-info player1-info">
-                <div id="player1Name">🦸 Гравець 1</div>
+                <div id="player1Name">🦸 P1</div>
                 <div class="score" id="score1">0</div>
-                <div class="status hidden" id="status1">🟢 Онлайн</div>
             </div>
-            <div id="timer" style="font-size: 1.5em; color: white;">60</div>
+            <div style="font-size: 1.3em; font-weight: bold;">
+                <div id="timer">60</div>
+                <div style="font-size: 0.7em;" id="roundInfo"></div>
+            </div>
             <div class="player-info player2-info">
-                <div id="player2Name">🧙 Гравець 2</div>
+                <div id="player2Name">🧙 P2</div>
                 <div class="score" id="score2">0</div>
-                <div class="status hidden" id="status2">🟢 Онлайн</div>
             </div>
         </div>
 
@@ -410,44 +585,125 @@
             <canvas id="gameCanvas"></canvas>
         </div>
 
-        <div class="controls" id="controls">
-            <!-- Контроли додаються динамічно -->
-        </div>
+        <div class="controls" id="controls"></div>
+    </div>
+
+    <div class="powerup-indicator" id="powerupIndicator"></div>
+    <div class="round-indicator" id="roundIndicator"></div>
+    <div class="chat-box" id="chatBox"></div>
+    <div class="emoji-bar hidden" id="emojiBar">
+        <div class="emoji-btn" onclick="sendEmoji('👍')">👍</div>
+        <div class="emoji-btn" onclick="sendEmoji('😄')">😄</div>
+        <div class="emoji-btn" onclick="sendEmoji('😢')">😢</div>
+        <div class="emoji-btn" onclick="sendEmoji('🔥')">🔥</div>
     </div>
 
     <!-- Кінець гри -->
     <div class="modal hidden" id="gameOver">
-        <h2>Гра закінчена! ⏱️</h2>
+        <h2>Гра закінчена!</h2>
         <div class="winner-text" id="winner"></div>
         <p id="finalScores"></p>
+        <div id="tournamentResults"></div>
         <button onclick="restartGame()">Нова гра</button>
         <button class="secondary" onclick="backToModeSelection()">Головне меню</button>
     </div>
 
     <script>
-        // Глобальні змінні
+        // ============ НАЛАШТУВАННЯ ============
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const EMOJI_CHARACTERS = ['🦸', '🧙', '🧝', '🦹', '🧚', '🦇', '🐉', '🦁'];
         
-        let gameMode = null; // 'local' або 'online'
+        const ALL_CHARACTERS = ['🦸', '🧙', '🧝', '🦹', '🧚', '🦇', '🐉', '🦁', '🐯', '🦊', '🐼', '🦄'];
+        const POWERUPS = {
+            speed: { emoji: '⚡', duration: 5000 },
+            shield: { emoji: '🛡️', duration: 7000 },
+            double: { emoji: '🌟', duration: 10000 },
+            teleport: { emoji: '🔄', duration: 0 }
+        };
+
+        const MAPS = {
+            forest: { bg: '#2d4a3e', grid: 'rgba(34, 139, 34, 0.2)' },
+            desert: { bg: '#c2b280', grid: 'rgba(210, 180, 140, 0.3)' },
+            ice: { bg: '#b0e0e6', grid: 'rgba(135, 206, 250, 0.3)' },
+            volcano: { bg: '#8b0000', grid: 'rgba(255, 69, 0, 0.2)' }
+        };
+
+        // Глобальний стан
+        let gameMode = null;
+        let difficulty = 'medium';
+        let selectedGameMode = 'time';
+        let selectedMap = 'forest';
+        let soundEnabled = true;
         let gameRunning = false;
         let gameLoop = null;
         let syncLoop = null;
         let timeLeft = 60;
         let timerInterval = null;
 
-        // Онлайн режим
+        // Онлайн
         let myPlayerId = null;
         let myPlayerName = '';
         let currentRoom = null;
         const storage = window.storage;
 
-        // Гравці та об'єкти
+        // Гравці
         let players = {};
+        let selectedCharacters = { player1: null, player2: null };
+        let currentSelectingPlayer = 'player1';
+        
+        // Об'єкти
         let coins = [];
         let obstacles = [];
+        let powerups = [];
+        let particles = [];
 
+        // Турнір
+        let tournamentMode = false;
+        let currentRound = 1;
+        let totalRounds = 3;
+        let roundScores = [];
+
+        // Статистика
+        let stats = JSON.parse(localStorage.getItem('gameStats') || '{"gamesPlayed": 0, "player1Wins": 0, "player2Wins": 0, "totalCoins": 0, "bestScore": 0}');
+
+        // Складність
+        const DIFFICULTY = {
+            easy: { speed: 2, obstacles: 4, powerupChance: 0.3 },
+            medium: { speed: 3, obstacles: 6, powerupChance: 0.2 },
+            hard: { speed: 4, obstacles: 8, powerupChance: 0.1 }
+        };
+
+        // ============ ЗВУКИ ============
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx && soundEnabled) {
+                audioCtx = new AudioContext();
+            }
+        }
+
+        function playSound(freq, duration = 100) {
+            if (!soundEnabled || !audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration/1000);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration/1000);
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const toggle = document.getElementById('soundToggle');
+            toggle.classList.toggle('on');
+            if (soundEnabled) initAudio();
+        }
+
+        // ============ CANVAS ============
         function resizeCanvas() {
             const gameArea = document.querySelector('.game-area');
             if (gameArea) {
@@ -456,51 +712,146 @@
             }
         }
 
+        // ============ УТИЛІТИ ============
         function generateId() {
             return Date.now().toString(36) + Math.random().toString(36).substr(2);
         }
 
-        function generateRoomCode() {
-            return Math.random().toString(36).substr(2, 4).toUpperCase();
+        function createParticle(x, y, emoji) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.textContent = emoji;
+            particle.style.left = x + 'px';
+            particle.style.top = y + 'px';
+            document.body.appendChild(particle);
+            setTimeout(() => particle.remove(), 1000);
+        }
+
+        function showRoundIndicator(text) {
+            const indicator = document.getElementById('roundIndicator');
+            indicator.textContent = text;
+            indicator.classList.add('show');
+            playSound(800, 200);
+            setTimeout(() => indicator.classList.remove('show'), 1500);
         }
 
         // ============ ВИБІР РЕЖИМУ ============
-        
         function selectMode(mode) {
             gameMode = mode;
+            initAudio();
+            playSound(600, 100);
             document.getElementById('modeSelection').classList.add('hidden');
-            
-            if (mode === 'local') {
-                startLocalGame();
-            } else {
-                document.getElementById('nameScreen').classList.remove('hidden');
-            }
+            document.getElementById('gameSettings').classList.remove('hidden');
         }
 
         function backToModeSelection() {
-            // Приховуємо всі екрани
-            document.querySelectorAll('.modal, .game-container').forEach(el => {
-                el.classList.add('hidden');
-            });
-            
-            // Очищаємо гру
+            document.querySelectorAll('.modal, .game-container').forEach(el => el.classList.add('hidden'));
+            document.getElementById('modeSelection').classList.remove('hidden');
             if (gameLoop) clearInterval(gameLoop);
             if (syncLoop) clearInterval(syncLoop);
             if (timerInterval) clearInterval(timerInterval);
             gameRunning = false;
+        }
+
+        // ============ НАЛАШТУВАННЯ ============
+        function selectDifficulty(level) {
+            difficulty = level;
+            playSound(500, 50);
+            document.querySelectorAll('.difficulty-selection .card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.target.closest('.card').classList.add('selected');
+        }
+
+        function selectGameMode(mode) {
+            selectedGameMode = mode;
+            playSound(500, 50);
+            document.querySelectorAll('.difficulty-selection .card').forEach((card, idx) => {
+                card.classList.remove('selected');
+            });
+            event.target.closest('.card').classList.add('selected');
             
-            // Показуємо вибір режиму
-            document.getElementById('modeSelection').classList.remove('hidden');
-            document.getElementById('connectionStatus').classList.add('hidden');
+            if (mode === 'tournament') {
+                tournamentMode = true;
+                totalRounds = 3;
+            } else {
+                tournamentMode = false;
+            }
+        }
+
+        function selectMap(map) {
+            selectedMap = map;
+            playSound(500, 50);
+            document.querySelectorAll('.map-grid .card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.target.closest('.card').classList.add('selected');
+        }
+
+        function backToSettings() {
+            if (gameMode === 'online') {
+                document.getElementById('roomSelection').classList.add('hidden');
+                document.getElementById('nameScreen').classList.add('hidden');
+            }
+            document.getElementById('characterSelection').classList.add('hidden');
+            document.getElementById('gameSettings').classList.remove('hidden');
+        }
+
+        // ============ ВИБІР ПЕРСОНАЖІВ ============
+        function showCharacterSelection() {
+            if (gameMode === 'online') {
+                showNameScreen();
+                return;
+            }
+            
+            playSound(600, 100);
+            document.getElementById('gameSettings').classList.add('hidden');
+            document.getElementById('characterSelection').classList.remove('hidden');
+            renderCharacterGrid();
+        }
+
+        function renderCharacterGrid() {
+            const grid = document.getElementById('characterGrid');
+            grid.innerHTML = '';
+            ALL_CHARACTERS.forEach(char => {
+                const card = document.createElement('div');
+                card.className = 'card character-card';
+                card.innerHTML = `<div class="icon">${char}</div>`;
+                card.onclick = () => selectCharacter(char);
+                grid.appendChild(card);
+            });
+        }
+
+        function selectCharacter(char) {
+            playSound(700, 80);
+            selectedCharacters[currentSelectingPlayer] = char;
+            
+            if (currentSelectingPlayer === 'player1') {
+                currentSelectingPlayer = 'player2';
+                document.getElementById('selectingPlayerText').textContent = '🧙 Гравець 2';
+                renderCharacterGrid();
+            } else {
+                confirmCharacters();
+            }
+        }
+
+        function confirmCharacters() {
+            if (!selectedCharacters.player1 || !selectedCharacters.player2) {
+                alert('Оберіть персонажів для обох гравців!');
+                return;
+            }
+            startLocalGame();
         }
 
         // ============ ЛОКАЛЬНА ГРА ============
-
         function startLocalGame() {
+            playSound(800, 200);
+            document.getElementById('characterSelection').classList.add('hidden');
             document.getElementById('gameContainer').classList.remove('hidden');
             resizeCanvas();
 
-            // Створюємо двох локальних гравців
+            const diffSettings = DIFFICULTY[difficulty];
+            
             players = {
                 player1: {
                     id: 'player1',
@@ -508,11 +859,13 @@
                     x: 50,
                     y: 50,
                     size: 40,
-                    emoji: '🦸',
+                    emoji: selectedCharacters.player1,
                     score: 0,
                     dx: 0,
                     dy: 0,
-                    speed: 3
+                    speed: diffSettings.speed,
+                    powerup: null,
+                    powerupEnd: 0
                 },
                 player2: {
                     id: 'player2',
@@ -520,15 +873,19 @@
                     x: Math.min(300, canvas.width - 100),
                     y: Math.min(300, canvas.height - 100),
                     size: 40,
-                    emoji: '🧙',
+                    emoji: selectedCharacters.player2,
                     score: 0,
                     dx: 0,
                     dy: 0,
-                    speed: 3
+                    speed: diffSettings.speed,
+                    powerup: null,
+                    powerupEnd: 0
                 }
             };
 
-            // Створюємо контроли для двох гравців
+            document.getElementById('player1Name').textContent = selectedCharacters.player1;
+            document.getElementById('player2Name').textContent = selectedCharacters.player2;
+
             const controlsDiv = document.getElementById('controls');
             controlsDiv.innerHTML = `
                 <div class="control-pad player1-controls">
@@ -555,6 +912,13 @@
                 </div>
             `;
 
+            if (tournamentMode) {
+                currentRound = 1;
+                roundScores = [];
+                document.getElementById('roundInfo').textContent = `Раунд 1/${totalRounds}`;
+                showRoundIndicator('🏆 Раунд 1');
+            }
+
             initGameObjects();
             startGameLoop();
         }
@@ -563,23 +927,13 @@
             const player = players[playerId];
             if (!player) return;
             
+            const speed = player.powerup === 'speed' ? player.speed * 1.5 : player.speed;
+            
             switch(direction) {
-                case 'up':
-                    player.dx = 0;
-                    player.dy = -player.speed;
-                    break;
-                case 'down':
-                    player.dx = 0;
-                    player.dy = player.speed;
-                    break;
-                case 'left':
-                    player.dx = -player.speed;
-                    player.dy = 0;
-                    break;
-                case 'right':
-                    player.dx = player.speed;
-                    player.dy = 0;
-                    break;
+                case 'up': player.dx = 0; player.dy = -speed; break;
+                case 'down': player.dx = 0; player.dy = speed; break;
+                case 'left': player.dx = -speed; player.dy = 0; break;
+                case 'right': player.dx = speed; player.dy = 0; break;
             }
         }
 
@@ -590,31 +944,29 @@
             player.dy = 0;
         }
 
-        // ============ ОНЛАЙН ГРА ============
+        // ============ ОНЛАЙН (скорочено для розміру) ============
+        function showNameScreen() {
+            document.getElementById('gameSettings').classList.add('hidden');
+            document.getElementById('nameScreen').classList.remove('hidden');
+        }
 
         function showRoomSelection() {
             const name = document.getElementById('playerName').value.trim();
             if (!name) {
-                alert('Будь ласка, введіть ваше ім\'я!');
+                alert('Введіть ім\'я!');
                 return;
             }
             myPlayerName = name;
             myPlayerId = generateId();
-            
             document.getElementById('nameScreen').classList.add('hidden');
             document.getElementById('roomSelection').classList.remove('hidden');
-            document.getElementById('connectionStatus').classList.remove('hidden');
-        }
-
-        function backToNameScreen() {
-            document.getElementById('roomSelection').classList.add('hidden');
-            document.getElementById('nameScreen').classList.remove('hidden');
+            document.getElementById('emojiBar').classList.remove('hidden');
         }
 
         async function createRoom() {
             const roomCode = document.getElementById('roomCode').value.trim().toUpperCase();
             if (!roomCode || roomCode.length !== 4) {
-                alert('Введіть код кімнати з 4 символів!');
+                alert('Код з 4 символів!');
                 return;
             }
 
@@ -625,68 +977,64 @@
                 } catch (e) {}
 
                 if (existingRoom) {
-                    alert('Кімната з таким кодом вже існує! Спробуйте інший код.');
+                    alert('Кімната існує!');
                     return;
                 }
 
                 currentRoom = roomCode;
-                
                 const roomData = {
                     code: roomCode,
                     host: myPlayerId,
                     hostName: myPlayerName,
                     guest: null,
                     guestName: null,
-                    status: 'waiting',
+                    settings: { difficulty, gameMode: selectedGameMode, map: selectedMap },
                     createdAt: Date.now()
                 };
 
                 await storage.set(`room:${roomCode}`, JSON.stringify(roomData), true);
-                
                 document.getElementById('roomSelection').classList.add('hidden');
                 document.getElementById('waitingScreen').classList.remove('hidden');
                 document.getElementById('currentRoomCode').textContent = roomCode;
-                
                 waitForPlayer();
             } catch (error) {
-                console.error('Error creating room:', error);
-                alert('Помилка створення кімнати. Спробуйте ще раз.');
+                alert('Помилка створення кімнати');
             }
         }
 
         async function joinRoom() {
             const roomCode = document.getElementById('roomCode').value.trim().toUpperCase();
             if (!roomCode || roomCode.length !== 4) {
-                alert('Введіть код кімнати з 4 символів!');
+                alert('Код з 4 символів!');
                 return;
             }
 
             try {
                 const roomDataStr = await storage.get(`room:${roomCode}`, true);
                 if (!roomDataStr) {
-                    alert('Кімната не знайдена! Перевірте код.');
+                    alert('Кімната не знайдена!');
                     return;
                 }
 
                 const roomData = JSON.parse(roomDataStr.value);
-                
                 if (roomData.guest) {
-                    alert('Кімната вже заповнена!');
+                    alert('Кімната заповнена!');
                     return;
                 }
 
                 currentRoom = roomCode;
-                
                 roomData.guest = myPlayerId;
                 roomData.guestName = myPlayerName;
-                roomData.status = 'ready';
-                
                 await storage.set(`room:${roomCode}`, JSON.stringify(roomData), true);
+                
+                // Застосовуємо налаштування хоста
+                difficulty = roomData.settings.difficulty;
+                selectedGameMode = roomData.settings.gameMode;
+                selectedMap = roomData.settings.map;
                 
                 startOnlineGame(false);
             } catch (error) {
-                console.error('Error joining room:', error);
-                alert('Кімната не знайдена! Перевірте код.');
+                alert('Помилка приєднання');
             }
         }
 
@@ -701,9 +1049,7 @@
                             startOnlineGame(true);
                         }
                     }
-                } catch (error) {
-                    console.error('Error checking room:', error);
-                }
+                } catch (error) {}
             }, 1000);
         }
 
@@ -711,8 +1057,7 @@
             if (currentRoom) {
                 storage.delete(`room:${currentRoom}`, true).catch(e => {});
             }
-            document.getElementById('waitingScreen').classList.add('hidden');
-            document.getElementById('roomSelection').classList.remove('hidden');
+            backToSettings();
         }
 
         async function startOnlineGame(isHost) {
@@ -721,12 +1066,12 @@
                 const roomData = JSON.parse(roomDataStr.value);
                 
                 document.getElementById('waitingScreen').classList.add('hidden');
-                document.getElementById('roomSelection').classList.add('hidden');
                 document.getElementById('gameContainer').classList.remove('hidden');
-                document.getElementById('status1').classList.remove('hidden');
-                document.getElementById('status2').classList.remove('hidden');
+                document.getElementById('chatBox').classList.add('visible');
                 
                 resizeCanvas();
+
+                const diffSettings = DIFFICULTY[difficulty];
                 
                 const player1Id = roomData.host;
                 const player2Id = roomData.guest;
@@ -737,11 +1082,13 @@
                     x: 50,
                     y: 50,
                     size: 40,
-                    emoji: EMOJI_CHARACTERS[0],
+                    emoji: ALL_CHARACTERS[0],
                     score: 0,
                     dx: 0,
                     dy: 0,
-                    speed: 3
+                    speed: diffSettings.speed,
+                    powerup: null,
+                    powerupEnd: 0
                 };
                 
                 players[player2Id] = {
@@ -750,17 +1097,18 @@
                     x: Math.min(300, canvas.width - 100),
                     y: Math.min(300, canvas.height - 100),
                     size: 40,
-                    emoji: EMOJI_CHARACTERS[1],
+                    emoji: ALL_CHARACTERS[1],
                     score: 0,
                     dx: 0,
                     dy: 0,
-                    speed: 3
+                    speed: diffSettings.speed,
+                    powerup: null,
+                    powerupEnd: 0
                 };
                 
                 document.getElementById('player1Name').textContent = roomData.hostName;
                 document.getElementById('player2Name').textContent = roomData.guestName;
-                
-                // Контроли для онлайн
+
                 const controlsDiv = document.getElementById('controls');
                 controlsDiv.className = 'controls single-player';
                 controlsDiv.innerHTML = `
@@ -776,41 +1124,25 @@
                         <div class="control-btn empty"></div>
                     </div>
                 `;
-                
+
                 initGameObjects();
                 await saveGameState();
-                
                 startGameLoop();
-                
                 syncLoop = setInterval(syncGame, 100);
-                
             } catch (error) {
-                console.error('Error starting game:', error);
-                alert('Помилка запуску гри');
+                alert('Помилка запуску');
             }
         }
 
         function moveOnlinePlayer(direction) {
             const player = players[myPlayerId];
             if (!player) return;
-            
+            const speed = player.powerup === 'speed' ? player.speed * 1.5 : player.speed;
             switch(direction) {
-                case 'up':
-                    player.dx = 0;
-                    player.dy = -player.speed;
-                    break;
-                case 'down':
-                    player.dx = 0;
-                    player.dy = player.speed;
-                    break;
-                case 'left':
-                    player.dx = -player.speed;
-                    player.dy = 0;
-                    break;
-                case 'right':
-                    player.dx = player.speed;
-                    player.dy = 0;
-                    break;
+                case 'up': player.dx = 0; player.dy = -speed; break;
+                case 'down': player.dx = 0; player.dy = speed; break;
+                case 'left': player.dx = -speed; player.dy = 0; break;
+                case 'right': player.dx = speed; player.dy = 0; break;
             }
         }
 
@@ -823,64 +1155,72 @@
 
         async function saveGameState() {
             if (!currentRoom || !myPlayerId) return;
-            
             try {
                 const myPlayer = players[myPlayerId];
                 if (!myPlayer) return;
-                
                 const playerState = {
                     x: myPlayer.x,
                     y: myPlayer.y,
                     dx: myPlayer.dx,
                     dy: myPlayer.dy,
                     score: myPlayer.score,
+                    powerup: myPlayer.powerup,
+                    powerupEnd: myPlayer.powerupEnd,
                     lastUpdate: Date.now()
                 };
-                
                 await storage.set(`game:${currentRoom}:${myPlayerId}`, JSON.stringify(playerState), true);
-            } catch (error) {
-                console.error('Error saving state:', error);
-            }
+            } catch (error) {}
         }
 
         async function syncGame() {
             if (!gameRunning || !currentRoom || gameMode !== 'online') return;
-            
             try {
                 await saveGameState();
-                
                 const otherPlayerId = Object.keys(players).find(id => id !== myPlayerId);
                 if (!otherPlayerId) return;
-                
                 const otherStateStr = await storage.get(`game:${currentRoom}:${otherPlayerId}`, true);
                 if (otherStateStr) {
                     const otherState = JSON.parse(otherStateStr.value);
                     const otherPlayer = players[otherPlayerId];
-                    
                     if (otherPlayer && otherState) {
                         otherPlayer.x = otherState.x;
                         otherPlayer.y = otherState.y;
-                        otherPlayer.dx = otherState.dx;
-                        otherPlayer.dy = otherState.dy;
                         otherPlayer.score = otherState.score;
+                        otherPlayer.powerup = otherState.powerup;
+                        otherPlayer.powerupEnd = otherState.powerupEnd;
                     }
                 }
-            } catch (error) {
-                console.error('Error syncing:', error);
-            }
+            } catch (error) {}
         }
 
-        // ============ ЗАГАЛЬНА ЛОГІКА ГРИ ============
+        function sendEmoji(emoji) {
+            if (gameMode !== 'online') return;
+            addChatMessage(`${myPlayerName}: ${emoji}`);
+            playSound(600, 50);
+        }
 
+        function addChatMessage(msg) {
+            const chatBox = document.getElementById('chatBox');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'chat-message';
+            msgDiv.textContent = msg;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            setTimeout(() => msgDiv.remove(), 5000);
+        }
+
+        // ============ ІГРОВА ЛОГІКА ============
         function initGameObjects() {
             coins = [];
             obstacles = [];
+            powerups = [];
+            const diffSettings = DIFFICULTY[difficulty];
             
             for (let i = 0; i < 8; i++) {
                 coins.push(createCoin());
             }
             
-            for (let i = 0; i < 6; i++) {
+            for (let i = 0; i < diffSettings.obstacles; i++) {
                 obstacles.push(createObstacle());
             }
         }
@@ -903,29 +1243,79 @@
             };
         }
 
+        function createPowerup() {
+            const types = Object.keys(POWERUPS);
+            const type = types[Math.floor(Math.random() * types.length)];
+            return {
+                x: Math.random() * (canvas.width - 30) + 15,
+                y: Math.random() * (canvas.height - 30) + 15,
+                size: 30,
+                type: type,
+                emoji: POWERUPS[type].emoji
+            };
+        }
+
         function startGameLoop() {
             gameRunning = true;
-            timeLeft = 60;
             
+            if (selectedGameMode === 'time') {
+                timeLeft = 60;
+            } else if (selectedGameMode === 'score') {
+                timeLeft = 999;
+            }
+
             gameLoop = setInterval(() => {
                 updateGame();
                 draw();
             }, 1000 / 60);
-            
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                document.getElementById('timer').textContent = timeLeft;
-                
-                if (timeLeft <= 0) {
-                    endGame();
+
+            if (selectedGameMode === 'time' || tournamentMode) {
+                timerInterval = setInterval(() => {
+                    if (selectedGameMode === 'time' || tournamentMode) {
+                        timeLeft--;
+                        document.getElementById('timer').textContent = timeLeft;
+                        
+                        if (timeLeft <= 0) {
+                            if (tournamentMode && currentRound < totalRounds) {
+                                nextRound();
+                            } else {
+                                endGame();
+                            }
+                        }
+                    }
+                }, 1000);
+            }
+
+            // Spawn powerups
+            setInterval(() => {
+                const diffSettings = DIFFICULTY[difficulty];
+                if (Math.random() < diffSettings.powerupChance && powerups.length < 2) {
+                    powerups.push(createPowerup());
                 }
-            }, 1000);
+            }, 3000);
         }
 
         function updateGame() {
             Object.values(players).forEach(player => {
                 updatePlayer(player);
+                
+                // Оновлення powerups
+                if (player.powerup && Date.now() > player.powerupEnd) {
+                    player.powerup = null;
+                    if (player.id === 'player1' || player.id === myPlayerId) {
+                        document.getElementById('powerupIndicator').classList.remove('active');
+                    }
+                }
             });
+
+            // Перевірка режиму гри
+            if (selectedGameMode === 'score') {
+                Object.values(players).forEach(player => {
+                    if (player.score >= 100) {
+                        endGame();
+                    }
+                });
+            }
         }
 
         function updatePlayer(player) {
@@ -937,20 +1327,54 @@
             if (player.y < 0) player.y = 0;
             if (player.y > canvas.height - player.size) player.y = canvas.height - player.size;
 
-            for (let obstacle of obstacles) {
-                if (checkCollision(player, obstacle)) {
-                    player.x -= player.dx * 2;
-                    player.y -= player.dy * 2;
-                    player.dx = 0;
-                    player.dy = 0;
+            // Перешкоди
+            if (player.powerup !== 'shield') {
+                for (let obstacle of obstacles) {
+                    if (checkCollision(player, obstacle)) {
+                        player.x -= player.dx * 2;
+                        player.y -= player.dy * 2;
+                        player.dx = 0;
+                        player.dy = 0;
+                        playSound(200, 100);
+                    }
                 }
             }
 
+            // Монети
             for (let i = coins.length - 1; i >= 0; i--) {
                 if (checkCollision(player, coins[i])) {
-                    player.score += 10;
+                    const points = player.powerup === 'double' ? 20 : 10;
+                    player.score += points;
+                    playSound(800, 100);
+                    createParticle(coins[i].x, coins[i].y, '+' + points);
                     coins.splice(i, 1);
                     coins.push(createCoin());
+                    stats.totalCoins++;
+                }
+            }
+
+            // Powerups
+            for (let i = powerups.length - 1; i >= 0; i--) {
+                if (checkCollision(player, powerups[i])) {
+                    const powerup = powerups[i];
+                    
+                    if (powerup.type === 'teleport') {
+                        player.x = Math.random() * (canvas.width - player.size);
+                        player.y = Math.random() * (canvas.height - player.size);
+                    } else {
+                        player.powerup = powerup.type;
+                        player.powerupEnd = Date.now() + POWERUPS[powerup.type].duration;
+                        
+                        if (player.id === 'player1' || player.id === myPlayerId) {
+                            const indicator = document.getElementById('powerupIndicator');
+                            indicator.textContent = powerup.emoji;
+                            indicator.classList.add('active');
+                        }
+                    }
+                    
+                    playSound(1000, 150);
+                    createParticle(powerup.x, powerup.y, powerup.emoji);
+                    powerups.splice(i, 1);
                 }
             }
         }
@@ -970,10 +1394,11 @@
         }
 
         function draw() {
-            ctx.fillStyle = '#2d4a3e';
+            const mapStyle = MAPS[selectedMap];
+            ctx.fillStyle = mapStyle.bg;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.strokeStyle = mapStyle.grid;
             ctx.lineWidth = 1;
             for (let i = 0; i < canvas.width; i += 40) {
                 ctx.beginPath();
@@ -996,16 +1421,62 @@
                 drawEmoji(coin.emoji, coin.x, coin.y, coin.size);
             });
 
+            powerups.forEach(powerup => {
+                drawEmoji(powerup.emoji, powerup.x, powerup.y, powerup.size);
+            });
+
             Object.values(players).forEach(player => {
+                // Ефект shield
+                if (player.powerup === 'shield') {
+                    ctx.strokeStyle = 'rgba(0, 200, 255, 0.5)';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(player.x + player.size/2, player.y + player.size/2, player.size/2 + 5, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+                
                 drawEmoji(player.emoji, player.x, player.y, player.size);
             });
 
-            // Оновлюємо рахунок
             const playerIds = Object.keys(players);
             if (playerIds.length >= 2) {
                 document.getElementById('score1').textContent = players[playerIds[0]].score;
                 document.getElementById('score2').textContent = players[playerIds[1]].score;
             }
+        }
+
+        function nextRound() {
+            clearInterval(gameLoop);
+            clearInterval(timerInterval);
+            
+            const playerIds = Object.keys(players);
+            roundScores.push({
+                round: currentRound,
+                player1: players[playerIds[0]].score,
+                player2: players[playerIds[1]].score
+            });
+            
+            currentRound++;
+            showRoundIndicator(`🏆 Раунд ${currentRound}`);
+            
+            // Скидаємо очки
+            Object.values(players).forEach(p => {
+                p.score = 0;
+                p.x = p.id === playerIds[0] ? 50 : Math.min(300, canvas.width - 100);
+                p.y = p.id === playerIds[0] ? 50 : Math.min(300, canvas.height - 100);
+                p.dx = 0;
+                p.dy = 0;
+                p.powerup = null;
+            });
+            
+            document.getElementById('roundInfo').textContent = `Раунд ${currentRound}/${totalRounds}`;
+            
+            initGameObjects();
+            timeLeft = 60;
+            
+            setTimeout(() => {
+                startGameLoop();
+            }, 2000);
         }
 
         async function endGame() {
@@ -1017,30 +1488,65 @@
             const gameOver = document.getElementById('gameOver');
             const winner = document.getElementById('winner');
             const finalScores = document.getElementById('finalScores');
+            const tournamentResults = document.getElementById('tournamentResults');
 
             const playerIds = Object.keys(players);
             const player1 = players[playerIds[0]];
             const player2 = players[playerIds[1]];
 
-            if (player1.score > player2.score) {
+            stats.gamesPlayed++;
+            
+            let totalScore1 = player1.score;
+            let totalScore2 = player2.score;
+
+            if (tournamentMode) {
+                roundScores.push({
+                    round: currentRound,
+                    player1: player1.score,
+                    player2: player2.score
+                });
+                
+                totalScore1 = roundScores.reduce((sum, r) => sum + r.player1, 0);
+                totalScore2 = roundScores.reduce((sum, r) => sum + r.player2, 0);
+                
+                let resultsHTML = '<div class="stats-panel"><h3>Результати турніру:</h3>';
+                roundScores.forEach(r => {
+                    resultsHTML += `<div class="stat-row"><span>Раунд ${r.round}</span><span>${r.player1} : ${r.player2}</span></div>`;
+                });
+                resultsHTML += `<div class="stat-row"><strong>Всього:</strong><strong>${totalScore1} : ${totalScore2}</strong></div></div>`;
+                tournamentResults.innerHTML = resultsHTML;
+            } else {
+                tournamentResults.innerHTML = '';
+            }
+
+            if (totalScore1 > totalScore2) {
                 winner.textContent = `${player1.emoji} ${player1.name} переміг! 🏆`;
                 winner.style.color = '#ff6b6b';
-            } else if (player2.score > player1.score) {
+                stats.player1Wins++;
+            } else if (totalScore2 > totalScore1) {
                 winner.textContent = `${player2.emoji} ${player2.name} переміг! 🏆`;
                 winner.style.color = '#4ecdc4';
+                stats.player2Wins++;
             } else {
                 winner.textContent = '🤝 Нічия!';
                 winner.style.color = 'gold';
             }
 
-            finalScores.innerHTML = `
-                ${player1.emoji} ${player1.name}: ${player1.score} очок<br>
-                ${player2.emoji} ${player2.name}: ${player2.score} очок
+            finalScores.innerHTML = tournamentMode ? '' : `
+                ${player1.emoji} ${player1.name}: ${totalScore1} очок<br>
+                ${player2.emoji} ${player2.name}: ${totalScore2} очок
             `;
 
-            document.getElementById('gameContainer').classList.add('hidden');
-            gameOver.classList.remove('hidden');
+            if (totalScore1 > stats.bestScore) stats.bestScore = totalScore1;
+            if (totalScore2 > stats.bestScore) stats.bestScore = totalScore2;
             
+            localStorage.setItem('gameStats', JSON.stringify(stats));
+            playSound(1200, 500);
+
+            document.getElementById('gameContainer').classList.add('hidden');
+            document.getElementById('chatBox').classList.remove('visible');
+            gameOver.classList.remove('hidden');
+
             if (gameMode === 'online' && currentRoom) {
                 try {
                     await storage.delete(`room:${currentRoom}`, true);
@@ -1051,17 +1557,50 @@
 
         function restartGame() {
             document.getElementById('gameOver').classList.add('hidden');
-            
             if (gameMode === 'local') {
-                startLocalGame();
+                currentSelectingPlayer = 'player1';
+                showCharacterSelection();
             } else {
                 backToModeSelection();
             }
         }
 
-        // Ініціалізація
+        // ============ СТАТИСТИКА ============
+        function showStats() {
+            const content = document.getElementById('statsContent');
+            content.innerHTML = `
+                <div class="stat-row"><span>Всього ігор:</span><span>${stats.gamesPlayed}</span></div>
+                <div class="stat-row"><span>Перемог гравця 1:</span><span>${stats.player1Wins}</span></div>
+                <div class="stat-row"><span>Перемог гравця 2:</span><span>${stats.player2Wins}</span></div>
+                <div class="stat-row"><span>Зібрано монет:</span><span>${stats.totalCoins}</span></div>
+                <div class="stat-row"><span>Найкращий рахунок:</span><span>${stats.bestScore}</span></div>
+            `;
+            document.getElementById('modeSelection').classList.add('hidden');
+            document.getElementById('statsScreen').classList.remove('hidden');
+        }
+
+        function closeStats() {
+            document.getElementById('statsScreen').classList.add('hidden');
+            document.getElementById('modeSelection').classList.remove('hidden');
+        }
+
+        function resetStats() {
+            if (confirm('Скинути всю статистику?')) {
+                stats = {gamesPlayed: 0, player1Wins: 0, player2Wins: 0, totalCoins: 0, bestScore: 0};
+                localStorage.setItem('gameStats', JSON.stringify(stats));
+                showStats();
+                playSound(400, 100);
+            }
+        }
+
+        // ============ ІНІЦІАЛІЗАЦІЯ ============
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
+        
+        // Автозвук при першому кліку
+        document.addEventListener('click', () => {
+            if (!audioCtx && soundEnabled) initAudio();
+        }, { once: true });
     </script>
 </body>
 </html>
